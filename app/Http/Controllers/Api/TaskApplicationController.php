@@ -20,14 +20,17 @@ class TaskApplicationController extends Controller
 
     public function createTaskApplication(Request $request) //validate
     {
-        $application = TaskApplication::create([
-            'requester_id' => $request->user()->id,
-            'requested_id' => $request->get('requested_id'),
+        $application = TaskApplication::make([
             'title' => $request->get('title'),
             'description' => $request->get('description'),
             'status' => ApplicationStatuses::PENDING->value,
-
-        ])->tags()->attach($request->get('tags'));
+        ]);
+        
+        $application
+            ->requester()->associate($request->user())
+            ->requested()->associate($request->get('requested_id'))
+            ->tags()->attach($request->get('tags'))
+            ->save();
 
         return response()->json([
             'message' => 'Task application created successfully',
@@ -37,14 +40,17 @@ class TaskApplicationController extends Controller
 
     public function acceptTaskApplication(Request $request, TaskApplication $application)
     {
-        $task = Task::create([
-            'requester_id' => $application->requester_id,
-            'required_id' => $request->user()->id,
+        $task = Task::make([
             'title' => $application->title,
             'description' => $application->description,
             'status' => ApplicationStatuses::APPROVED->value,
+        ]);
 
-        ])->tags()->attach($application->tags);
+        $task
+            ->requester()->associate($application->requester)
+            ->requested()->associate($request->user()->id)
+            ->tags()->attach($application->tags)
+            ->save();
 
         $application->update(['status' => ApplicationStatuses::APPROVED->value]);
 
