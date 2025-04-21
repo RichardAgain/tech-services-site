@@ -18,7 +18,7 @@ class Profile extends Model
 
     public function tags()
     {
-        return $this->hasMany(Tag::class);
+        return $this->morphToMany(Tag::class, 'taggable');
     }
 
     public function reviews()

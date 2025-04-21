@@ -21,12 +21,6 @@ return new class extends Migration
             $table->string('status')->default('pending'); // pending, accepted, rejected
             $table->timestamps();
         });
-
-        Schema::create('task_application_tags', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('task_application_id')->constrained('task_applications')->onDelete('cascade');
-            $table->foreignId('tag_id')->constrained('tags')->onDelete('cascade');
-        });
     }
 
     /**

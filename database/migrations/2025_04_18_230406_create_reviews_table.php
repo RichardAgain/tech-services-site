@@ -21,12 +21,6 @@ return new class extends Migration
             $table->float('rating')->default(0);
             $table->timestamps();
         });
-
-        Schema::create('review_tags', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('review_id')->constrained('reviews')->onDelete('cascade');
-            $table->foreignId('tag_id')->constrained('tags')->onDelete('cascade');
-        });
     }
 
     /**

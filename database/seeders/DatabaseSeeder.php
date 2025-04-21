@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Enums\UserRoles;
 use App\Models\Role;
+use App\Models\Tag;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -25,6 +26,14 @@ class DatabaseSeeder extends Seeder
 
         Role::create([
             'name' => 'client',
+        ]);
+
+        Tag::create([
+            'name' => 'Reparacion',
+        ]);
+
+        Tag::create([
+            'name' => 'Instalacion',
         ]);
 
         User::factory()->admin()->create([

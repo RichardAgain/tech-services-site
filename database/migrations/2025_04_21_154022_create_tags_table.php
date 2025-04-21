@@ -11,22 +11,23 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('profiles', function (Blueprint $table) {
+        Schema::create('tags', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->string('name')->unique();
+        });
 
-            $table->text('description');
-            $table->float('rating')->default(0);
+        Schema::create('taggables', function (Blueprint $table) {
+            $table->foreignId('tag_id')->constrained('tags')->onDelete('cascade');
+            $table->morphs('taggable');
             $table->timestamps();
         });
     }
-
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('profiles');
+        Schema::dropIfExists('tags');
     }
 };

@@ -61,6 +61,7 @@ class UserFactory extends Factory
         return $this->has(ProfileFactory::new(), 'profile')
             ->afterCreating(function (User $user) {
                 $user->role()->associate(UserRoles::OPERATOR->value);
+                $user->profile->tags()->attach(1);
             });
     }
 }

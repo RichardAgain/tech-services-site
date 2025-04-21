@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\Auth\LoginController;
 use App\Http\Controllers\Api\Auth\RegisterController;
+use App\Http\Controllers\Api\ProfileController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -11,6 +12,8 @@ Route::post('register', [RegisterController::class, 'authenticate']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('user', function (Request $request) {
-        return $request->user()->currentAccessToken()->tokenable;
+        return $request->user();
     });
 });
+
+Route::get('profiles', [ProfileController::class, 'index']);

@@ -21,12 +21,6 @@ return new class extends Migration
             $table->boolean('isCompleted')->default(false);
             $table->timestamps();
         });
-
-        Schema::create('task_tags', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('task_id')->constrained('tasks')->onDelete('cascade');
-            $table->foreignId('tag_id')->constrained('tags');
-        });
     }
 
     /**
