@@ -14,8 +14,6 @@ class ReviewController extends Controller
     {
         $reviews = $profile->reviews;
 
-        dd($reviews->toJson());
-
         return ReviewResource::collection($reviews);
     }
 

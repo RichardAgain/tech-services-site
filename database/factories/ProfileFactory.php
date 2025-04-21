@@ -26,7 +26,9 @@ class ProfileFactory extends Factory
     public function withReviews(): static
     {
         return $this->afterCreating(function (Profile $profile) {
-            //
+            Review::factory(5)->create([
+                'reviewed_id' => $profile->id,
+            ]);
         });
     }
 }
