@@ -15,11 +15,12 @@ class RegisterController extends Controller
         $user = User::make($request->validated());
 
         $user->role()->associate(2);
-
         $user->save();
 
+        $token = $user->createToken('token')->plainTextToken;
+
         return response()->json([
-            'token' => $user->createToken('token')->plainTextToken
+            'token' => $token,
         ]);
     }
 }
