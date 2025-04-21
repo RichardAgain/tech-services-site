@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\Auth\LoginController;
 use App\Http\Controllers\Api\Auth\RegisterController;
 use App\Http\Controllers\Api\ProfileController;
+use App\Http\Controllers\Api\ReviewController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -17,3 +18,5 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 Route::get('profiles', [ProfileController::class, 'index']);
+
+Route::get('reviews/{profile}', [ReviewController::class, 'getProfileReviews']);

@@ -58,7 +58,7 @@ class UserFactory extends Factory
 
     public function operator(): static
     {
-        return $this->has(ProfileFactory::new(), 'profile')
+        return $this->has(ProfileFactory::new()->withReviews(), 'profile')
             ->afterCreating(function (User $user) {
                 $user->role()->associate(UserRoles::OPERATOR->value);
                 $user->profile->tags()->attach(1);

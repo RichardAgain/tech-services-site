@@ -27,7 +27,7 @@ class TaskApplicationController extends Controller
         ]);
         
         $application
-            ->requester()->associate($request->user())
+            ->requester()->associate($request->user()->id)
             ->requested()->associate($request->get('requested_id'))
             ->tags()->attach($request->get('tags'))
             ->save();

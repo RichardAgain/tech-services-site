@@ -26,7 +26,7 @@ class ProfileFactory extends Factory
     public function withReviews(): static
     {
         return $this->afterCreating(function (Profile $profile) {
-            $profile->reviews()->saveMany(Review::factory(5)->make());
+            //
         });
     }
 }
