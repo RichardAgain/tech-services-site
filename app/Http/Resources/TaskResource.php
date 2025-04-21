@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class ProfileApplicationResource extends JsonResource
+class TaskResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -15,18 +15,17 @@ class ProfileApplicationResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'user' => [
-                'id' => $this->user->id,
-                'username' => $this->user->username,
+            'requester' => [
+                'id' => $this->requester->id,
+                'username' => $this->requester->username,
+            ],
+            'requested' => [
+                'id' => $this->requested->id,
+                'username' => $this->requested->username,
             ],
             'createdAt' => $this->created_at,
             'status' => $this->status,
-            
-            'firstName' => $this->user->firstName,
-            'lastName' => $this->user->lastName,
-            'email' => $this->user->email,
-            'phone' => $this->user->phone,
-            'address' => $this->user->address,
+            'title' => $this->title,
             'description' => $this->description,
             'tags' => $this->tags,
         ];

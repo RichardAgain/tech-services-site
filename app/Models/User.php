@@ -62,4 +62,19 @@ class User extends Authenticatable
     {
         return $this->hasOne(Profile::class);
     }
+
+    public function tasks()
+    {
+        return $this->hasMany(Task::class);
+    }
+
+    public function taskApplications()
+    {
+        return $this->hasMany(TaskApplication::class);
+    }
+
+    public function taskApplicationsAsRequester()
+    {
+        return $this->hasMany(TaskApplication::class, 'requester_id');
+    }
 }

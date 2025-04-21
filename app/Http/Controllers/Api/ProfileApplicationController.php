@@ -35,4 +35,11 @@ class ProfileApplicationController extends Controller
 
         return response()->json(['message' => 'Application accepted successfully.']);
     }
+    
+    public function reject(ProfileApplication $application)
+    {
+        $application->update(['status' => 'rejected']);
+
+        return response()->json(['message' => 'Application rejected successfully.']);
+    }
 }
