@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ProfileResource;
 use App\Models\Profile;
 use App\Models\Tag;
 use Illuminate\Http\Request;
@@ -19,8 +20,6 @@ class ProfileController extends Controller
             $profiles = Profile::get();
         }
 
-        $profiles->load(['user', 'tags']);
-
-        return response()->json($profiles);
+        return ProfileResource::collection($profiles);
     }
 }
