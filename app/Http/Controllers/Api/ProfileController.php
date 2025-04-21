@@ -14,7 +14,7 @@ class ProfileController extends Controller
     {
         $tags = Tag::whereIn('id', explode(',', $request->query('tags')))->get();
 
-        if ($tags->isEmpty()) {
+        if (!$tags->isEmpty()) {
             $profiles = Profile::whereAttachedTo($tags)->get();
         } else {
             $profiles = Profile::get();
