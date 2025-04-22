@@ -14,8 +14,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 // AUTH
-Route::post('login', [LoginController::class, 'authenticate']);
-Route::post('register', [RegisterController::class, 'authenticate']);
+Route::post('auth/login', [LoginController::class, 'authenticate']);
+Route::post('auth/register', [RegisterController::class, 'authenticate']);
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('auth/user', function (Request $request) {
+        return $request->user();
+    });
+});
 
 //PROFILES
 Route::get('profiles', [ProfileController::class, 'index']);
@@ -51,11 +57,4 @@ Route::controller(TaskApplicationController::class)->middleware('auth:sanctum')-
 
     Route::patch('task-applications/{application}/accept', 'acceptTaskApplication');
     Route::patch('task-applications/{application}/reject', 'rejectTaskApplication');
-});
-
-
-Route::middleware('auth:sanctum')->group(function () {
-    Route::get('user', function (Request $request) {
-        return $request->user();
-    });
 });
