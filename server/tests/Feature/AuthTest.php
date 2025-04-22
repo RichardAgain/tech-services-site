@@ -19,7 +19,7 @@ class AuthTest extends TestCase
             'username' => 'test_user'
         ]);
 
-        $response = $this->post('api/login', [
+        $response = $this->post('api/auth/login', [
             'email' => $user->email,
             'password' => 'password'
         ]);
@@ -28,7 +28,7 @@ class AuthTest extends TestCase
 
         $response = $this
             ->withHeader('Authorization', "Bearer {$token}")
-            ->get('api/user');
+            ->get('api/auth/user');
 
         // dd($response->json());
 
@@ -41,7 +41,7 @@ class AuthTest extends TestCase
 
         $data = User::factory()->make()->toArray();
 
-        $response = $this->post('api/register', [
+        $response = $this->post('api/auth/register', [
             ...$data,
             'password' => 'password',
             'password_confirmation' => 'password'
@@ -51,9 +51,7 @@ class AuthTest extends TestCase
 
         $response = $this
             ->withHeader('Authorization', "Bearer {$token}")
-            ->get('api/user');
-
-        dd($response->json());
+            ->get('api/auth/user');
 
         $response->assertStatus(200);
     }

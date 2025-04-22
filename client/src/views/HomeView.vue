@@ -7,6 +7,6 @@ import MainLayout from '@/layouts/MainLayout.vue';
 
 <template>
     <MainLayout>
-        
+        Holaaa!!!!
     </MainLayout>
 </template>

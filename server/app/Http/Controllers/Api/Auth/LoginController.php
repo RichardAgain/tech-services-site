@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Api\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\UserResource;
 use App\Models\User;
+use App\Services\AuthService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -11,6 +13,10 @@ use Illuminate\Validation\ValidationException;
 
 class LoginController extends Controller
 {
+    public function __construct(
+        protected AuthService $authService
+    ) {}
+
     public function authenticate (Request $request)
     {
         $request->validate([
@@ -26,8 +32,11 @@ class LoginController extends Controller
             ]);
         }
 
+        $token = $this->authService->createUserAccessToken($user, 'login');
+
         return response()->json([
-            'token' => $user->createToken('token')->plainTextToken
+            new UserResource($user),
+            'token' => $token
         ]);
     }
 }

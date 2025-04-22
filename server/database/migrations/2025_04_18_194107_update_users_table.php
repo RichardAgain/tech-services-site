@@ -17,7 +17,7 @@ return new class extends Migration
         });
 
         Schema::table('users', function (Blueprint $table) {
-            $table->foreignId('role_id')->constrained('roles')->default(2);
+            $table->foreignId('role_id')->constrained('roles');
 
             $table->renameColumn('name', 'username');
             $table->string('firstName');

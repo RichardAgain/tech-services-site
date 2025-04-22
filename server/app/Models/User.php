@@ -3,6 +3,8 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use App\Enums\UserRoles;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -76,5 +78,14 @@ class User extends Authenticatable
     public function taskApplicationsAsRequester()
     {
         return $this->hasMany(TaskApplication::class, 'requester_id');
+    }
+
+    public function isOperator()
+    {
+        return $this->role->id == UserRoles::OPERATOR->value;
+    }
+    public function isAdmin()
+    {
+        return $this->role->id == UserRoles::ADMIN->value;
     }
 }

@@ -50,6 +50,7 @@ Route::controller(ProfileApplicationController::class)->middleware('auth:sanctum
     Route::patch('profile-applications/{application}/reject', 'reject');
 });
 
+//TASK APPLICATIONS
 Route::controller(TaskApplicationController::class)->middleware('auth:sanctum')->group(function () {
     Route::get('task-applications', 'getUserTaskApplications');
 

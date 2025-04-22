@@ -53,6 +53,7 @@ class UserFactory extends Factory
     {
         return $this->afterCreating(function (User $user) {
             $user->role()->associate(UserRoles::ADMIN->value);
+            $user->save();
         });
     }
 
@@ -62,6 +63,7 @@ class UserFactory extends Factory
             ->afterCreating(function (User $user) {
                 $user->role()->associate(UserRoles::OPERATOR->value);
                 $user->profile->tags()->attach(1);
+                $user->save();
             });
     }
 }
