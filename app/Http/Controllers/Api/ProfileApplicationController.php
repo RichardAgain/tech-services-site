@@ -14,7 +14,6 @@ class ProfileApplicationController extends Controller
     {
         $applications = ProfileApplication::orderBy('created_at', 'desc')->get();
 
-
         return ProfileApplication::collection($applications);
     }
 
