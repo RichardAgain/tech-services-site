@@ -38,7 +38,7 @@ class TaskApplicationController extends Controller
 
     public function acceptTaskApplication(Request $request, TaskApplication $application)
     {
-        $task = Task::make([
+        $task = Task::create([
             'requester_id' => $application->requester->id,
             'required_id' => $request->user()->id,
             'title' => $application->title,
