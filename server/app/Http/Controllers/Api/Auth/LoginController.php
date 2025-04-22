@@ -35,7 +35,7 @@ class LoginController extends Controller
         $token = $this->authService->createUserAccessToken($user, 'login');
 
         return response()->json([
-            new UserResource($user),
+            'user' => new UserResource($user),
             'token' => $token
         ]);
     }

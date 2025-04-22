@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class TaskApplication extends Model
 {
     protected $fillable = [
+        'requester_id',
+        'required_id',
         'title',
         'description',
         'status',
@@ -17,9 +19,9 @@ class TaskApplication extends Model
         return $this->belongsTo(User::class, 'requester_id');
     }
 
-    public function requested()
+    public function required()
     {
-        return $this->belongsTo(User::class, 'requested_id');
+        return $this->belongsTo(User::class, 'required_id');
     }
 
     public function tags()

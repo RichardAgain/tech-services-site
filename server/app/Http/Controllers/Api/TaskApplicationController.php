@@ -20,17 +20,15 @@ class TaskApplicationController extends Controller
 
     public function createTaskApplication(Request $request) //validate
     {
-        $application = TaskApplication::make([
+        $application = TaskApplication::create([
+            'requester_id' => $request->user()->id,
+            'required_id' => $request->get('required_id'),
             'title' => $request->get('title'),
             'description' => $request->get('description'),
             'status' => ApplicationStatuses::PENDING->value,
         ]);
-        
-        $application
-            ->requester()->associate($request->user()->id)
-            ->requested()->associate($request->get('requested_id'))
-            ->tags()->attach($request->get('tags'))
-            ->save();
+
+        // FALTA LOS TAGS
 
         return response()->json([
             'message' => 'Task application created successfully',
@@ -41,16 +39,12 @@ class TaskApplicationController extends Controller
     public function acceptTaskApplication(Request $request, TaskApplication $application)
     {
         $task = Task::make([
+            'requester_id' => $application->requester->id,
+            'required_id' => $request->user()->id,
             'title' => $application->title,
             'description' => $application->description,
             'status' => ApplicationStatuses::APPROVED->value,
         ]);
-
-        $task
-            ->requester()->associate($application->requester)
-            ->requested()->associate($request->user()->id)
-            ->tags()->attach($application->tags)
-            ->save();
 
         $application->update(['status' => ApplicationStatuses::APPROVED->value]);
 

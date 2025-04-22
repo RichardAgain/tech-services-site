@@ -67,12 +67,20 @@ class User extends Authenticatable
 
     public function tasks()
     {
-        return $this->hasMany(Task::class);
+        if ($this->isOperator()) {
+            return $this->hasMany(Task::class, 'required_id');
+        }
+
+        return $this->hasMany(Task::class, 'requester_id');
     }
 
     public function taskApplications()
     {
-        return $this->hasMany(TaskApplication::class);
+        if ($this->isOperator()) {
+            return $this->hasMany(TaskApplication::class, 'required_id');
+        }
+
+        return $this->hasMany(TaskApplication::class, 'requester_id');
     }
 
     public function taskApplicationsAsRequester()

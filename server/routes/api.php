@@ -56,6 +56,6 @@ Route::controller(TaskApplicationController::class)->middleware('auth:sanctum')-
 
     Route::post('task-applications', 'createTaskApplication');
 
-    Route::patch('task-applications/{application}/accept', 'acceptTaskApplication');
+    Route::post('task-applications/{application}/accept', 'acceptTaskApplication');
     Route::patch('task-applications/{application}/reject', 'rejectTaskApplication');
 });
