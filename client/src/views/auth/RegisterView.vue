@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, reactive } from 'vue';
-import { useAuthStore } from '@/stores/authotization';
+import { useAuthStore } from '@/stores/authorization';
 import authServices from '@/services/auth';
 import router from '@/router';
 const authStore = useAuthStore();

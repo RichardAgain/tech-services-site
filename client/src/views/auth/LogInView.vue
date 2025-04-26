@@ -1,8 +1,9 @@
 <script setup>
 import { ref, computed, reactive } from 'vue';
-import { useAuthStore } from '@/stores/authotization';
+import { useAuthStore } from '@/stores/authorization';
 import authServices from '@/services/auth';
 import router from '@/router';
+import MainLayout from '@/layouts/MainLayout.vue';
 const authStore = useAuthStore();
 
 const userData = reactive({
@@ -24,7 +25,10 @@ const onSubmit = async (e) => {
 </script>
 
 <template>
-
+  <MainLayout>
+    <input v-model="userData.email" />
+    <input v-model="userData.password" type="password" />
+  </MainLayout>
 </template>
 
 <style scoped>

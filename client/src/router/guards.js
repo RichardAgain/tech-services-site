@@ -1,4 +1,4 @@
-import { useAuthStore } from '@/stores/authotization'
+import { useAuthStore } from '@/stores/authorization'
 import axios from 'axios'
 
 const authGuard = async (to, from) => {

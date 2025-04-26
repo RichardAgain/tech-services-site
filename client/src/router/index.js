@@ -1,10 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
-import LogIn from '@/views/auth/LogInView.vue'
 import Register from '@/views/auth/RegisterView.vue'
 import { authGuard } from './guards'
 import TechniciansView from '../views/TechniciansView.vue'
 import ServicesView from '../views/ServicesView.vue'
+import LogInView from '@/views/auth/LogInView.vue'
+import RegisterView from '@/views/auth/RegisterView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -14,31 +15,27 @@ const router = createRouter({
       name: 'home',
       component: HomeView,
     },
-    // {
-    //   path: '/pay',
-    //   name: 'pay',
-    //   component: PaymentView,
-    //   beforeEnter: authGuard
-    // },
     {
       path: '/login',
       name: 'login',
-      component: LogIn
+      component: LogInView
     },
     {
       path: '/register',
       name: 'register',
-      component: Register
+      component: RegisterView
     },
     {
       path: '/technicians',
       name: 'technicians',
-      component: TechniciansView
+      component: TechniciansView,
+      beforeEnter: authGuard
     },
     {
       path: '/services',
       name: 'services',
-      component: ServicesView
+      component: ServicesView,
+      beforeEnter: authGuard
     }
   ]
 })
