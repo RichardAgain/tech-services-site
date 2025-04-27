@@ -175,9 +175,9 @@ const handleSubmit = async () => {
         <!-- Sign up link -->
         <div class="text-center text-sm">
           <span class="text-gray-600">Don't have an account?</span>
-          <a href="#" class="font-medium text-sky-600 hover:text-sky-500 ml-1 transition-colors duration-200">
+          <RouterLink to="/register" class="font-medium text-sky-600 hover:text-sky-500 ml-1 transition-colors duration-200">
             Sign up
-          </a>
+          </RouterLink>
         </div>
       </form>
     </div>
