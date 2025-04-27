@@ -1,32 +1,37 @@
 <template>
   <MainLayout>
+    <PageTitle title="Perfiles de Tecnicos"></PageTitle>
 
-    <h1>Perfiles de Técnicos</h1>
-    <div class="technicians-list">
-      <TechnicianCard
-      v-for="technician in technicians"
-      :key="technician.id"
-      :technician="technician"
+    <div class="p-8 grid grid-cols-2 gap-6">
+      <ProfileCard
+      v-for="profile in profiles"
+      :key="profile.id"
+      :profile="profile"
       />
     </div>
   </MainLayout>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import TechnicianCard from '@/components/TechnicianCard.vue'
+import { onBeforeMount, ref } from 'vue'
+import ProfileCard from '@/components/ProfileCard.vue'
 import MainLayout from '@/layouts/MainLayout.vue';
+import PageTitle from '@/components/PageTitle.vue';
+import { fetchProfiles } from '@/services/profiles';
 
-const technicians = ref([
-  { id: 1, nombre: 'Juan Pérez', especialidad: 'Reparación de PC', foto: '', descripcion: 'Experto en hardware y software.' },
-  { id: 2, nombre: 'Ana Gómez', especialidad: 'Mantenimiento', foto: '', descripcion: 'Mantenimiento preventivo y correctivo.' },
-])
+const profiles = ref([])
+
+onBeforeMount(async () => {
+  try {
+    const data = await fetchProfiles();
+
+    profiles.value = data;
+  } catch (error) {
+    console.error('Error fetching technicians:', error);
+  }
+})
 </script>
 
 <style scoped>
-.technicians-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
+
 </style> 

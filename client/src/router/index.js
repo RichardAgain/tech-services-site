@@ -7,6 +7,7 @@ import LogInView from '@/views/auth/LogInView.vue'
 import RegisterView from '@/views/auth/RegisterView.vue'
 import TasksView from '@/views/tasks/TasksView.vue'
 import ApplicationsViews from '@/views/applications/ApplicationsViews.vue'
+import TechnicianView from '@/views/technicians/TechnicianView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -31,6 +32,12 @@ const router = createRouter({
       name: 'technicians',
       component: TechniciansView,
       beforeEnter: authGuard
+    },
+    {
+      path: '/tecnicos/:id',
+      name: 'technician',
+      component: TechnicianView,
+      beforeEnter: authGuard,
     },
     {
       path: '/tareas',

@@ -189,7 +189,9 @@ onUnmounted(() => {
     </header>
 
     <main class="flex-1 bg-gray-50 p-4 sm:p-6 lg:p-8 h-screen">
-        <slot></slot>
+        <div class="px-40">
+            <slot></slot>
+        </div>
     </main>
 
 </template>
