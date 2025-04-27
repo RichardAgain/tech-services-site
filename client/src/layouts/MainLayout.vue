@@ -3,8 +3,10 @@ import { useAuthStore } from '@/stores/authorization';
 import { ref, onMounted, onUnmounted } from 'vue'
 import { ClipboardIcon, InboxIcon, UserIcon, LogOutIcon, MenuIcon, XIcon } from 'lucide-vue-next'
 import router from '@/router';
-import auth from '@/services/auth';
-const user = useAuthStore().user;
+import authService from '@/services/auth';
+
+const authStore = useAuthStore();
+const user = authStore.user;
 
 // State
 const isUserMenuOpen = ref(false)
@@ -16,8 +18,14 @@ const navigateTo = (path) => {
     router.push(path)
 }
 
-const logout = () => {
-    auth.logout()
+const logout = async () => {
+    try {
+        await authService.logOut()
+        authStore.$reset()
+        router.push('/login')
+    } catch (error) {
+        console.error('Error during logout:', error)
+    }
 }
 
 // Close dropdown when clicking outside

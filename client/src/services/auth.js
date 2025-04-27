@@ -1,3 +1,4 @@
+import { useAuthStore } from "@/stores/authorization"
 import axios from "axios"
 
 const register = (body) => 
@@ -9,12 +10,9 @@ const logIn = (body) =>
     .then(response => response.data)
 
 
-const logOut = () => {
-    // logic to the api
+const logOut = () => 
+    axios.post('/api/auth/logout')
+    .then(response => response.data)    
+   
 
-    localStorage.removeItem('token')
-    localStorage.removeItem('user')
-    window.location.reload()
-}
-
-export default { register, logIn }
+export default { register, logIn, logOut }

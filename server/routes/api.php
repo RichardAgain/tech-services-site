@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\Auth\LoginController;
 use App\Http\Controllers\Api\Auth\RegisterController;
+use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ProfileApplicationController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\ReviewController;
@@ -14,8 +15,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 // AUTH
-Route::post('auth/login', [LoginController::class, 'authenticate']);
-Route::post('auth/register', [RegisterController::class, 'authenticate']);
+Route::controller(AuthController::class)->group(function () {
+    Route::post('auth/login', 'login');
+    Route::post('auth/register', 'register');
+    Route::post('auth/logout', 'logout');
+});
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('auth/user', function (Request $request) {
