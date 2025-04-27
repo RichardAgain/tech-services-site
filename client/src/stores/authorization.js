@@ -5,8 +5,9 @@ export const useAuthStore = defineStore('auth', () => {
     const token = ref('')
 
     const user = ref({
-        first_name: '',
-        last_name: '',
+        firstName: '',
+        lastName: '',
+        username: '',
         email: '',
     })
 

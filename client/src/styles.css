@@ -17,3 +17,19 @@
     border-color: var(--color-gray-200, currentcolor);
   }
 }
+
+.bg-primary {
+  @apply bg-emerald-600 dark:bg-emerald-500;
+}
+
+.text-primary-foreground {
+  @apply text-white;
+}
+
+.hover\:bg-primary\/90:hover {
+  @apply bg-emerald-500 dark:bg-emerald-400;
+}
+
+.focus\:ring-primary:focus {
+  @apply ring-emerald-500;
+}
