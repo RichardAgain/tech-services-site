@@ -25,4 +25,9 @@ class ProfileController extends Controller
             'tags' => Tag::all(),
         ];
     }
+
+    public function show (Profile $profile)
+    {
+        return new ProfileResource($profile);
+    }
 }

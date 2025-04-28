@@ -28,7 +28,10 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 //PROFILES
-Route::get('profiles', [ProfileController::class, 'index']);
+Route::controller(ProfileController::class)->group(function () {
+    Route::get('profiles', 'index');
+    Route::get('profiles/{profile}', 'show');
+});
 
 //TASKS
 Route::controller(TaskController::class)->middleware('auth:sanctum')->group(function () {
@@ -39,9 +42,9 @@ Route::controller(TaskController::class)->middleware('auth:sanctum')->group(func
 
 //REVIEWS
 Route::controller(ReviewController::class)->group(function () {
-    Route::get('profile/{profile}/reviews', 'getProfileReviews');
+    Route::get('profiles/{profile}/reviews', 'getProfileReviews');
 
-    Route::post('profile/{profile}/reviews', 'store')
+    Route::post('profiles/{profile}/reviews', 'store')
         ->middleware('auth:sanctum');
 });
 
