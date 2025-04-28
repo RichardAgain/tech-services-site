@@ -5,11 +5,13 @@ import Spinner from '@/components/Spinner.vue';
 import MainLayout from '@/layouts/MainLayout.vue';
 import { fetchProfile } from '@/services/profiles';
 import { sleep } from '@/utils/sleep';
+import { StarIcon, UserIcon } from 'lucide-vue-next';
 import { computed, onBeforeMount, ref } from 'vue';
 import { useRoute } from 'vue-router';
 
 const route = useRoute();
 const profile = ref(null)
+const reviews = ref([])
 
 const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -31,13 +33,48 @@ onBeforeMount(async () => {
 
         const data = await fetchProfile(route.params.id);
 
-        console.log(data.data)
-        profile.value = data.data;
+        profile.value = data.profile;
+        reviews.value = data.reviews;
     } catch (error) {
         console.error('Error fetching profile:', error);
     }
 })
 
+const averageRating = computed(() => {
+    if (!reviews.value || reviews.value.length === 0) return 0;
+    const sum = reviews.value.reduce((acc, review) => acc + review.rating, 0);
+    return sum / reviews.value.length;
+});
+
+// Calculate rating counts (how many reviews for each star rating)
+const ratingCounts = computed(() => {
+    const counts = [0, 0, 0, 0, 0]; // Index 0 = 1 star, index 4 = 5 stars
+
+    if (!reviews.value || reviews.value.length === 0) return counts;
+
+    reviews.value.forEach(review => {
+        if (review.rating >= 1 && review.rating <= 5) {
+            counts[review.rating - 1]++;
+        }
+    });
+
+    return counts;
+});
+
+// Calculate rating percentages for the progress bars
+const ratingPercentages = computed(() => {
+    const percentages = [0, 0, 0, 0, 0]; // Index 0 = 1 star, index 4 = 5 stars
+
+    if (!reviews.value || reviews.value.length === 0) return percentages;
+
+    const totalReviews = reviews.value.length;
+
+    ratingCounts.value.forEach((count, index) => {
+        percentages[index] = (count / totalReviews) * 100;
+    });
+
+    return percentages;
+});
 </script>
 
 <template>
@@ -60,16 +97,6 @@ onBeforeMount(async () => {
                             {{ profile.firstName }} {{ profile.lastName }}
                         </h2>
                         <p class="text-sm text-gray-500">@{{ profile.user.username }}</p>
-                    </div>
-
-                    <div class="flex items-center mt-2 md:mt-0">
-                        <div class="flex mr-2">
-                            <StarIcon v-for="i in 5" :key="i" :class="[
-                                'w-5 h-5',
-                                i <= profile.rating ? 'text-yellow-400' : 'text-gray-300'
-                            ]" />
-                        </div>
-                        <span class="text-gray-700">{{ profile.rating }}/5</span>
                     </div>
                 </div>
 
@@ -127,14 +154,95 @@ onBeforeMount(async () => {
                 </div>
 
                 <!-- Action button -->
-                <div class="flex justify-end">
+                <!-- <div class="flex justify-end">
                     <button
                         class="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-md transition-colors">
                         Solicitar
                     </button>
+                </div> -->
+            </div>
+
+            <!-- Rating Summary Card -->
+            <div v-if="reviews && reviews.length > 0" class="bg-gray-50 rounded-lg p-4 px-8 mb-6 shadow-sm max-w-4xl mx-auto my-6">
+                <div class="flex flex-col md:flex-row md:items-center gap-6">
+                    <!-- Average Rating Display -->
+                    <div class="text-center md:border-r md:border-gray-200 md:pr-6">
+                        <div class="text-4xl font-bold text-gray-800">{{ averageRating.toFixed(1) }}</div>
+                        <div class="flex justify-center my-1">
+                            <StarIcon v-for="i in 5" :key="i" :class="[
+                                'w-4 h-4',
+                                i <= Math.round(averageRating) ? 'text-yellow-400' : 'text-gray-300'
+                            ]" />
+                        </div>
+                        <div class="text-sm text-gray-500">{{ reviews.length }} reseñas</div>
+                    </div>
+
+                    <!-- Rating Distribution -->
+                    <div class="flex-1">
+                        <div v-for="i in 5" :key="i" class="flex items-center mb-1 last:mb-0">
+                            <div class="flex items-center w-16">
+                                <span class="text-sm text-gray-600 mr-1">{{ 6 - i }}</span>
+                                <StarIcon class="w-4 h-4 text-yellow-400" />
+                            </div>
+
+                            <div class="flex-1 h-4 bg-gray-200 rounded-full overflow-hidden">
+                                <div class="h-full bg-emerald-500 rounded-full"
+                                    :style="{ width: `${ratingPercentages[5 - i]}%` }"></div>
+                            </div>
+
+                            <div class="w-12 text-right">
+                                <span class="text-xs text-gray-500">{{ ratingCounts[5 - i] || 0 }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-8 pt-6 border-t border-gray-200">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">Reseñas</h3>
+
+                <div v-if="reviews && reviews.length > 0">
+                    <div v-for="(review, index) in reviews" :key="index"
+                        class="mb-6 pb-6 border-b border-gray-100 last:border-b-0 last:pb-0 bg-white rounded-lg shadow-sm p-4">
+                        <div class="flex items-start">
+                            <div class="bg-gray-100 rounded-full p-2 mr-3">
+                                <UserIcon class="w-6 h-6 text-gray-500" />
+                            </div>
+
+                            <div class="flex-1">
+                                <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-2">
+                                    <div>
+                                        <h4 class="font-medium text-gray-800">
+                                            {{ review.reviewer.firtName }} {{ review.reviewer.lastName }}
+                                        </h4>
+                                        <p class="text-xs text-gray-500">@{{ review.reviewer.username }}</p>
+                                    </div>
+
+                                    <div class="flex items-center mt-1 sm:mt-0">
+                                        <div class="flex mr-2">
+                                            <StarIcon v-for="i in 5" :key="i" :class="[
+                                                'w-4 h-4',
+                                                i <= review.rating ? 'text-yellow-400' : 'text-gray-300'
+                                            ]" />
+                                        </div>
+                                        <span class="text-sm text-gray-600">{{ review.created_at }}</span>
+                                    </div>
+                                </div>
+
+                                <h5 class="font-medium text-gray-800 mb-1">{{ review.title }}</h5>
+                                <p class="text-gray-600 text-sm">{{ review.content }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div v-else class="text-center py-8 bg-gray-50 rounded-lg">
+                    <MessageSquareIcon class="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                    <p class="text-gray-500">No hay reseñas disponibles</p>
                 </div>
             </div>
         </div>
+
 
     </MainLayout>
 </template>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ProfileResource;
+use App\Http\Resources\ReviewResource;
 use App\Models\Profile;
 use App\Models\Tag;
 use Illuminate\Http\Request;
@@ -28,6 +29,9 @@ class ProfileController extends Controller
 
     public function show (Profile $profile)
     {
-        return new ProfileResource($profile);
+        return [
+            'profile' => new ProfileResource($profile),
+            'reviews' => ReviewResource::collection($profile->reviews),
+        ]; 
     }
 }
