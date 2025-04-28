@@ -28,6 +28,7 @@
                     <!-- Form Content -->
                     <div class="flex-1 overflow-y-auto p-4">
                         <form @submit.prevent="handleSubmit" class="space-y-6">
+                            <ErrorAlert :error="formError" />
                             <!-- Title Field -->
                             <div class="space-y-2">
                                 <label for="title" class="block text-sm font-medium text-gray-700">
@@ -92,6 +93,7 @@ import { XIcon, PlusIcon, LoaderIcon, Send } from 'lucide-vue-next';
 import PrimaryButton from '@/components/PrimaryButton.vue';
 import { postTaskApplication } from '@/services/task-applications';
 import { useRouter } from 'vue-router';
+import ErrorAlert from '@/components/ErrorAlert.vue';
 
 const router = useRouter();
 
@@ -118,10 +120,9 @@ const props = defineProps({
     }
 });
 
-const emit = defineEmits(['submit', 'close']);
-
 const isOpen = ref(false);
 const isSubmitting = ref(false);
+const formError = ref(null);
 
 const form = reactive({
     title: props.initialData.title,
@@ -143,6 +144,7 @@ const isTagSelected = (tagId) => {
 };
 
 const handleSubmit = async () => {
+    formError.value = null;
     isSubmitting.value = true;
 
     try {
@@ -154,6 +156,8 @@ const handleSubmit = async () => {
         });
 
         router.push({ name: 'tasks' });
+    } catch (err) {
+        formError.value = err;
     } finally {
         isSubmitting.value = false;
     }
