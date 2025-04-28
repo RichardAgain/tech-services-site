@@ -2,10 +2,11 @@
 import PageTitle from '@/components/PageTitle.vue';
 import PrimaryButton from '@/components/PrimaryButton.vue';
 import Spinner from '@/components/Spinner.vue';
+import TagCards from '@/components/TagCards.vue';
 import MainLayout from '@/layouts/MainLayout.vue';
 import { fetchProfile } from '@/services/profiles';
 import { sleep } from '@/utils/sleep';
-import { StarIcon, UserIcon } from 'lucide-vue-next';
+import { Paperclip, Send, SendHorizonal, StarIcon, UserIcon } from 'lucide-vue-next';
 import { computed, onBeforeMount, ref } from 'vue';
 import { useRoute } from 'vue-router';
 
@@ -86,7 +87,10 @@ const ratingPercentages = computed(() => {
         <div v-else>
             <!-- Page title and button -->
             <PageTitle :title="`Perfil de ${profile.firstName + ' ' + profile.lastName}`">
-                <PrimaryButton onClick=""> Solicitar </PrimaryButton>
+                <PrimaryButton onClick=""> 
+                    <Send size="16" />
+                    Solicitar 
+                </PrimaryButton>
             </PageTitle>
 
             <div class="bg-white rounded-lg shadow-sm p-6 max-w-4xl mx-auto my-6">
@@ -101,12 +105,7 @@ const ratingPercentages = computed(() => {
                 </div>
 
                 <!-- Tags -->
-                <div class="flex flex-wrap gap-2 mb-6">
-                    <span v-for="tag in profile.tags" :key="tag.id"
-                        class="px-3 py-1 bg-emerald-100 text-emerald-800 text-xs font-medium rounded-full">
-                        {{ tag.name }}
-                    </span>
-                </div>
+                <TagCards :tags="profile.tags" />
 
                 <!-- Contact information -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">

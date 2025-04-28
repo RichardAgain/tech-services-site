@@ -6,9 +6,7 @@
     >
       <h2 class="font-bold mb-1">{{ profile.firstName + " " + profile.lastName }}</h2>
       <!-- <p><strong>Especialidad:</strong> {{ profile.especialidad }}</p> -->
-       <div class="flex flex-wrap gap-2 mb-2">
-         <div v-for="tag in profile.tags" class="bg-primary text-sm rounded p-1 text-white"> {{ tag.name }} </div>
-       </div>
+      <TagCards :tags="profile.tags" />
 
       <p>{{ profile.description }}</p>
     </div>
@@ -17,6 +15,7 @@
 
 <script setup>
 import router from '@/router';
+import TagCards from './TagCards.vue';
 
 const props = defineProps({
   profile: {
