@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Enums\UserRoles;
+use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
@@ -62,7 +63,8 @@ class UserFactory extends Factory
         return $this->has(ProfileFactory::new()->withReviews(), 'profile')
             ->afterCreating(function (User $user) {
                 $user->role()->associate(UserRoles::OPERATOR->value);
-                $user->profile->tags()->attach(1);
+                $tags = collect(Tag::all()->pluck('id'))->random(rand(1, 2))->all();
+                $user->profile->tags()->attach($tags);
                 $user->save();
             });
     }

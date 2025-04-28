@@ -41,6 +41,10 @@ class DatabaseSeeder extends Seeder
             'name' => 'Instalacion',
         ]);
 
+        Tag::create([
+            'name' => 'Soldadura',
+        ]);
+
         User::factory()->admin()->create([
             'username' => 'admin123',
             'email' => 'admin@example.com'
