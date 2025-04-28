@@ -1,8 +1,8 @@
 import axios from "axios";
 
-const fetchProfiles = () => 
-    axios.get("/api/profiles")
-    .then((response) => response.data.data)
+const fetchProfiles = (tags = "") => 
+    axios.get(`/api/profiles?tags=${tags}`)
+    .then((response) => response.data)
 
 const fetchProfile = (id) =>
     axios.get(`/api/profiles/${id}`)

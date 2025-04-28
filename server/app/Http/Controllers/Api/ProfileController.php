@@ -20,6 +20,9 @@ class ProfileController extends Controller
             $profiles = Profile::get();
         }
 
-        return ProfileResource::collection($profiles);
+        return [
+            'profiles' => ProfileResource::collection($profiles),
+            'tags' => Tag::all(),
+        ];
     }
 }

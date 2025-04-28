@@ -19,7 +19,6 @@ class ProfileResource extends JsonResource
                 'id' => $this->user->id,
                 'username' => $this->user->username,
             ],
-            
             'firstName' => $this->user->firstName,
             'lastName' => $this->user->lastName,
             'email' => $this->user->email,

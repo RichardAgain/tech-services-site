@@ -188,7 +188,7 @@ onUnmounted(() => {
         </transition>
     </header>
 
-    <main class="flex-1 bg-gray-50 p-4 sm:p-6 lg:p-8 h-screen">
+    <main class="flex-1 bg-gray-100 p-4 sm:p-6 lg:p-8 min-h-screen">
         <div class="px-40">
             <slot></slot>
         </div>
