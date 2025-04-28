@@ -4,11 +4,13 @@ import PrimaryButton from '@/components/PrimaryButton.vue';
 import Spinner from '@/components/Spinner.vue';
 import TagCards from '@/components/TagCards.vue';
 import MainLayout from '@/layouts/MainLayout.vue';
+import router from '@/router';
 import { fetchProfile } from '@/services/profiles';
 import { sleep } from '@/utils/sleep';
 import { Paperclip, Send, SendHorizonal, StarIcon, UserIcon } from 'lucide-vue-next';
 import { computed, onBeforeMount, ref } from 'vue';
 import { useRoute } from 'vue-router';
+import TechnicianRequestForm from './TechnicianRequestForm.vue';
 
 const route = useRoute();
 const profile = ref(null)
@@ -87,11 +89,9 @@ const ratingPercentages = computed(() => {
         <div v-else>
             <!-- Page title and button -->
             <PageTitle :title="`Perfil de ${profile.firstName + ' ' + profile.lastName}`">
-                <PrimaryButton onClick=""> 
-                    <Send size="16" />
-                    Solicitar 
-                </PrimaryButton>
+                <TechnicianRequestForm :profile="profile" :availableTags="profile.tags" />
             </PageTitle>
+
 
             <div class="bg-white rounded-lg shadow-sm p-6 max-w-4xl mx-auto my-6">
                 <!-- Header with name and rating -->

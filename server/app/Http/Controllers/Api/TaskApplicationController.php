@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Enums\ApplicationStatuses;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreTaskApplicationRequest;
 use App\Http\Resources\TaskResource;
 use App\Models\Task;
 use App\Models\TaskApplication;
@@ -15,20 +16,22 @@ class TaskApplicationController extends Controller
     {
         $applications = $request->user()->taskApplications;
 
-        return response()->json($applications);
+        return TaskResource::collection($applications);
     }
 
-    public function createTaskApplication(Request $request) //validate
+    public function createTaskApplication(StoreTaskApplicationRequest $request) //validate
     {
-        $application = TaskApplication::create([
+        $application = TaskApplication::make([
+            ...$request->validated(),
             'requester_id' => $request->user()->id,
-            'required_id' => $request->get('required_id'),
-            'title' => $request->get('title'),
-            'description' => $request->get('description'),
             'status' => ApplicationStatuses::PENDING->value,
         ]);
 
-        // FALTA LOS TAGS
+        $application->save();
+
+        if (count($request->get('tags')) > 0) {
+            $application->tags()->attach(1);
+        }
 
         return response()->json([
             'message' => 'Task application created successfully',
