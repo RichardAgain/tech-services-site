@@ -29,8 +29,8 @@ class TaskApplicationController extends Controller
 
         $application->save();
 
-        if (count($request->get('tags')) > 0) {
-            $application->tags()->attach(1);
+        if (count($request->safe()['tags']) > 0) {
+            $application->tags()->attach($request->safe()['tags']);
         }
 
         return response()->json([

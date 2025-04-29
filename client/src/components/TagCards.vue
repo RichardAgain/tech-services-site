@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-wrap gap-2 mb-6">
+    <div class="flex flex-wrap gap-2 my-1">
         <span v-for="tag in tags" :key="tag.id" class="px-3 py-1 bg-emerald-100 text-emerald-800 text-xs font-medium rounded-full">
             {{ tag.name }}
         </span>

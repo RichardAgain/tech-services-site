@@ -13,8 +13,12 @@ class TaskController extends Controller
     public function getUserTasks (Request $request)
     {
         $tasks = $request->user()->tasks;
+        $applications = $request->user()->taskApplications;
 
-        return TaskResource::collection($tasks);
+        return [
+            'tasks' => TaskResource::collection($tasks),
+            'applications' => TaskResource::collection($applications),
+        ];
     }
 
     public function updateUserTaskStatus (Request $request, Task $task)
