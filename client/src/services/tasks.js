@@ -25,4 +25,4 @@ const updateUserTask = (taskId, status) => {
     })
 }
 
-export { fetchUserTasks }
+export { fetchUserTasks, updateUserTask }

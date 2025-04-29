@@ -2,7 +2,8 @@
 import PageTitle from '@/components/PageTitle.vue';
 import TagCards from '@/components/TagCards.vue';
 import MainLayout from '@/layouts/MainLayout.vue';
-import { fetchUserTasks } from '@/services/tasks';
+import { acceptTaskApplication, rejectTaskApplication } from '@/services/task-applications';
+import { fetchUserTasks, updateUserTask } from '@/services/tasks';
 import { useAuthStore } from '@/stores/authorization';
 import { computed, onBeforeMount, ref } from 'vue';
 
@@ -18,9 +19,9 @@ const selectedTask = ref({});
 const actionInProgress = ref(false);
 const currentAction = ref(null);
 const actionStatus = ref({
-  show: false,
-  success: false,
-  message: ''
+    show: false,
+    success: false,
+    message: ''
 });
 
 onBeforeMount(async () => {
@@ -37,73 +38,70 @@ onBeforeMount(async () => {
 })
 
 const handleTaskAction = async (action) => {
-  actionInProgress.value = true;
-  currentAction.value = action;
-  
-  try {
-    // Simulate API call with delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Update task status based on action
-    const taskId = selectedTask.value.id;
-    const taskType = selectedTask.value.type;
-    
-    if (taskType === 'application') {
-      // Find and update the application
-      const appIndex = applications.value.findIndex(app => app.id === taskId);
-      if (appIndex !== -1) {
-        if (action === 'approve') {
-          applications.value[appIndex].status = 'approved';
-          actionStatus.value = {
-            show: true,
-            success: true,
-            message: 'La solicitud ha sido aprobada exitosamente.'
-          };
-        } else if (action === 'reject') {
-          applications.value[appIndex].status = 'rejected';
-          actionStatus.value = {
-            show: true,
-            success: true,
-            message: 'La solicitud ha sido rechazada.'
-          };
-        }
-        // Update the selected task to reflect changes
-        selectedTask.value = { ...applications.value[appIndex], type: 'application' };
-      }
-    } else if (taskType === 'task') {
-      // Find and update the task
-      const taskIndex = tasks.value.findIndex(task => task.id === taskId);
-      if (taskIndex !== -1) {
+    actionInProgress.value = true;
+    currentAction.value = action;
+
+    try {
+        // Simulate API call with delay
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        const taskId = selectedTask.value.id;
+        console.log(taskId)
+
         if (action === 'complete') {
-          tasks.value[taskIndex].status = 'completed';
-          actionStatus.value = {
-            show: true,
-            success: true,
-            message: 'La tarea ha sido completada exitosamente.'
-          };
-        } else if (action === 'cancel') {
-          tasks.value[taskIndex].status = 'cancelled';
-          actionStatus.value = {
-            show: true,
-            success: true,
-            message: 'La tarea ha sido cancelada.'
-          };
+            const response = await updateUserTask(taskId, 'completed');
+
+            // tasks.value[taskIndex].status = 'completed';
+            // actionStatus.value = {
+            //     show: true,
+            //     success: true,
+            //     message: 'La tarea ha sido completada exitosamente.'
+            // };
         }
-        // Update the selected task to reflect changes
-        selectedTask.value = { ...tasks.value[taskIndex], type: 'task' };
-      }
+        
+        if (action === 'cancel') {
+            const response = await (taskId, 'canceled');
+
+            // tasks.value[taskIndex].status = 'cancelled';
+            // actionStatus.value = {
+            //     show: true,
+            //     success: true,
+            //     message: 'La tarea ha sido cancelada.'
+            // };
+        }
+
+        if (action === 'approve') {
+            const response = await acceptTaskApplication(taskId);
+
+            // applications.value[appIndex].status = 'approved';
+            // actionStatus.value = {
+            //     show: true,
+            //     success: true,
+            //     message: 'La solicitud ha sido aprobada exitosamente.'
+            // };
+        } 
+        
+        if (action === 'reject') {
+            const response = await rejectTaskApplication(taskId);
+
+            // applications.value[appIndex].status = 'rejected';
+            // actionStatus.value = {
+            //     show: true,
+            //     success: true,
+            //     message: 'La solicitud ha sido rechazada.'
+            // };
+        }
+    } catch (error) {
+        console.error('Error updating task:', error);
+        actionStatus.value = {
+            show: true,
+            success: false,
+            message: 'Ha ocurrido un error al procesar la acción. Por favor, inténtelo de nuevo.'
+        };
+    } finally {
+        actionInProgress.value = false;
+        currentAction.value = null;
     }
-  } catch (error) {
-    console.error('Error updating task:', error);
-    actionStatus.value = {
-      show: true,
-      success: false,
-      message: 'Ha ocurrido un error al procesar la acción. Por favor, inténtelo de nuevo.'
-    };
-  } finally {
-    actionInProgress.value = false;
-    currentAction.value = null;
-  }
 };
 
 // Computed property for approved tasks from both sources
@@ -224,22 +222,22 @@ const getStatusText = (status) => {
 
 // Modal functions
 const openTaskModal = (task) => {
-  selectedTask.value = { ...task };
-  showModal.value = true;
-  // Reset action status when opening modal
-  actionStatus.value = {
-    show: false,
-    success: false,
-    message: ''
-  };
-  // Prevent scrolling on the body when modal is open
-  document.body.style.overflow = 'hidden';
+    selectedTask.value = { ...task };
+    showModal.value = true;
+    // Reset action status when opening modal
+    actionStatus.value = {
+        show: false,
+        success: false,
+        message: ''
+    };
+    // Prevent scrolling on the body when modal is open
+    document.body.style.overflow = 'hidden';
 };
 
 const closeModal = () => {
-  showModal.value = false;
-  // Re-enable scrolling on the body
-  document.body.style.overflow = 'auto';
+    showModal.value = false;
+    // Re-enable scrolling on the body
+    document.body.style.overflow = 'auto';
 };
 
 </script>
@@ -343,7 +341,7 @@ const closeModal = () => {
                                 </tr>
                                 <tr v-for="app in sortedApplications" :key="app.id" class="hover:bg-gray-50">
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#{{ app.id
-                                        }}</td>
+                                    }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm">
                                         <span :class="getStatusClass(app.status)"
                                             class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full">
