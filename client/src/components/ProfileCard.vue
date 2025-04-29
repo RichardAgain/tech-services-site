@@ -27,7 +27,7 @@ const props = defineProps({
 const handleClick = () => {
   router.push({
     name: 'technician',
-    params: { id: props.profile.user.id }
+    params: { id: props.profile.id }
   })
 }
 </script>
