@@ -3,7 +3,11 @@ import PageTitle from '@/components/PageTitle.vue';
 import TagCards from '@/components/TagCards.vue';
 import MainLayout from '@/layouts/MainLayout.vue';
 import { fetchUserTasks } from '@/services/tasks';
+import { useAuthStore } from '@/stores/authorization';
 import { computed, onBeforeMount, ref } from 'vue';
+
+const authStore = useAuthStore()
+const user = authStore.user
 
 const applications = ref([])
 const tasks = ref([])
@@ -11,33 +15,110 @@ const tasks = ref([])
 const showModal = ref(false);
 const selectedTask = ref({});
 
+const actionInProgress = ref(false);
+const currentAction = ref(null);
+const actionStatus = ref({
+  show: false,
+  success: false,
+  message: ''
+});
+
 onBeforeMount(async () => {
     try {
         const response = await fetchUserTasks()
 
+        console.log(user.role.id)
+
         tasks.value = response.tasks
         applications.value = response.applications
-
-        console.log(response.applications)
-
     } finally {
 
     }
 })
 
+const handleTaskAction = async (action) => {
+  actionInProgress.value = true;
+  currentAction.value = action;
+  
+  try {
+    // Simulate API call with delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // Update task status based on action
+    const taskId = selectedTask.value.id;
+    const taskType = selectedTask.value.type;
+    
+    if (taskType === 'application') {
+      // Find and update the application
+      const appIndex = applications.value.findIndex(app => app.id === taskId);
+      if (appIndex !== -1) {
+        if (action === 'approve') {
+          applications.value[appIndex].status = 'approved';
+          actionStatus.value = {
+            show: true,
+            success: true,
+            message: 'La solicitud ha sido aprobada exitosamente.'
+          };
+        } else if (action === 'reject') {
+          applications.value[appIndex].status = 'rejected';
+          actionStatus.value = {
+            show: true,
+            success: true,
+            message: 'La solicitud ha sido rechazada.'
+          };
+        }
+        // Update the selected task to reflect changes
+        selectedTask.value = { ...applications.value[appIndex], type: 'application' };
+      }
+    } else if (taskType === 'task') {
+      // Find and update the task
+      const taskIndex = tasks.value.findIndex(task => task.id === taskId);
+      if (taskIndex !== -1) {
+        if (action === 'complete') {
+          tasks.value[taskIndex].status = 'completed';
+          actionStatus.value = {
+            show: true,
+            success: true,
+            message: 'La tarea ha sido completada exitosamente.'
+          };
+        } else if (action === 'cancel') {
+          tasks.value[taskIndex].status = 'cancelled';
+          actionStatus.value = {
+            show: true,
+            success: true,
+            message: 'La tarea ha sido cancelada.'
+          };
+        }
+        // Update the selected task to reflect changes
+        selectedTask.value = { ...tasks.value[taskIndex], type: 'task' };
+      }
+    }
+  } catch (error) {
+    console.error('Error updating task:', error);
+    actionStatus.value = {
+      show: true,
+      success: false,
+      message: 'Ha ocurrido un error al procesar la acción. Por favor, inténtelo de nuevo.'
+    };
+  } finally {
+    actionInProgress.value = false;
+    currentAction.value = null;
+  }
+};
+
 // Computed property for approved tasks from both sources
 const approvedTasks = computed(() => {
-  const approvedApplications = applications.value
-    .filter(app => app.status === 'approved')
-    .map(app => ({...app, type: 'application'}));
-    
-  const approvedCreatedTasks = tasks.value
-    .filter(task => task.status === 'approved')
-    .map(task => ({...task, type: 'task'}));
-    
-  // Combine and sort by date (newest first)
-  return [...approvedApplications, ...approvedCreatedTasks]
-    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    const approvedApplications = applications.value
+        .filter(app => app.status === 'approved')
+        .map(app => ({ ...app, type: 'application' }));
+
+    const approvedCreatedTasks = tasks.value
+        .filter(task => task.status === 'approved')
+        .map(task => ({ ...task, type: 'task' }));
+
+    // Combine and sort by date (newest first)
+    return [...approvedApplications, ...approvedCreatedTasks]
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 });
 
 // Status priority for sorting (lower number = higher priority)
@@ -143,16 +224,22 @@ const getStatusText = (status) => {
 
 // Modal functions
 const openTaskModal = (task) => {
-    selectedTask.value = { ...task };
-    showModal.value = true;
-    // Prevent scrolling on the body when modal is open
-    document.body.style.overflow = 'hidden';
+  selectedTask.value = { ...task };
+  showModal.value = true;
+  // Reset action status when opening modal
+  actionStatus.value = {
+    show: false,
+    success: false,
+    message: ''
+  };
+  // Prevent scrolling on the body when modal is open
+  document.body.style.overflow = 'hidden';
 };
 
 const closeModal = () => {
-    showModal.value = false;
-    // Re-enable scrolling on the body
-    document.body.style.overflow = 'auto';
+  showModal.value = false;
+  // Re-enable scrolling on the body
+  document.body.style.overflow = 'auto';
 };
 
 </script>
@@ -256,7 +343,7 @@ const closeModal = () => {
                                 </tr>
                                 <tr v-for="app in sortedApplications" :key="app.id" class="hover:bg-gray-50">
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#{{ app.id
-                                    }}</td>
+                                        }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm">
                                         <span :class="getStatusClass(app.status)"
                                             class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full">
@@ -351,8 +438,8 @@ const closeModal = () => {
                 </div>
             </div>
 
-            <!-- Task Detail Modal -->
-            <div v-if="showModal" class="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4">
+            <div v-if="showModal"
+                class="fixed inset-0 bg-black/40 bg-opacity-50 flex items-center justify-center z-50 p-4">
                 <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col">
                     <!-- Modal Header -->
                     <div
@@ -384,7 +471,12 @@ const closeModal = () => {
 
                                 <div>
                                     <h4 class="text-sm font-medium text-gray-500 mb-1">Título</h4>
-                                    <p class="text-base">{{ selectedTask.title }}</p>
+                                    <p class="text-base"
+                                        :class="{ 'font-semibold text-emerald-700': selectedTask.status === 'approved' }">
+                                        <span v-if="selectedTask.status === 'approved'"
+                                            class="inline-block w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                                        {{ selectedTask.title }}
+                                    </p>
                                 </div>
 
                                 <div>
@@ -419,7 +511,12 @@ const closeModal = () => {
 
                                 <div v-if="selectedTask.tags && selectedTask.tags.length > 0">
                                     <h4 class="text-sm font-medium text-gray-500 mb-1">Etiquetas</h4>
-                                    <TagCards :tags="selectedTask.tags" />
+                                    <div class="flex flex-wrap gap-2">
+                                        <span v-for="(tag, index) in selectedTask.tags" :key="index"
+                                            class="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                                            {{ tag }}
+                                        </span>
+                                    </div>
                                 </div>
 
                                 <div v-else>
@@ -436,12 +533,117 @@ const closeModal = () => {
                                 {{ selectedTask.description || 'Sin descripción' }}
                             </div>
                         </div>
+
+                        <!-- Action Status Message -->
+                        <div v-if="actionStatus.show" class="mt-6">
+                            <div :class="[
+                                'p-4 rounded-lg text-sm flex items-center',
+                                actionStatus.success ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'
+                            ]">
+                                <span v-if="actionStatus.success" class="mr-2">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd"
+                                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                            clip-rule="evenodd"></path>
+                                    </svg>
+                                </span>
+                                <span v-else class="mr-2">
+                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd"
+                                            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                                            clip-rule="evenodd"></path>
+                                    </svg>
+                                </span>
+                                {{ actionStatus.message }}
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Modal Footer -->
-                    <div class="px-6 py-4 border-t border-gray-200 flex justify-end sticky bottom-0 bg-white">
+                    <div class="px-6 py-4 border-t border-gray-200 flex justify-between sticky bottom-0 bg-white">
+                        <!-- Role-based action buttons -->
+                        <div v-if="user.role.id === 2" class="flex space-x-2">
+                            <!-- Application-specific buttons -->
+                            <template v-if="selectedTask.status === 'pending'">
+                                <button @click="handleTaskAction('approve')"
+                                    class="px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors"
+                                    :disabled="actionInProgress">
+                                    <span v-if="actionInProgress && currentAction === 'approve'"
+                                        class="flex items-center">
+                                        <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                                stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor"
+                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                            </path>
+                                        </svg>
+                                        Procesando...
+                                    </span>
+                                    <span v-else>Aceptar</span>
+                                </button>
+                                <button @click="handleTaskAction('reject')"
+                                    class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
+                                    :disabled="actionInProgress">
+                                    <span v-if="actionInProgress && currentAction === 'reject'"
+                                        class="flex items-center">
+                                        <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                                stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor"
+                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                            </path>
+                                        </svg>
+                                        Procesando...
+                                    </span>
+                                    <span v-else>Rechazar</span>
+                                </button>
+                            </template>
+
+                            <!-- Task-specific buttons -->
+                            <template v-if="selectedTask.status === 'approved'">
+                                <button @click="handleTaskAction('complete')"
+                                    class="px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors"
+                                    :disabled="actionInProgress">
+                                    <span v-if="actionInProgress && currentAction === 'complete'"
+                                        class="flex items-center">
+                                        <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                                stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor"
+                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                            </path>
+                                        </svg>
+                                        Procesando...
+                                    </span>
+                                    <span v-else>Completar</span>
+                                </button>
+                                <button @click="handleTaskAction('cancel')"
+                                    class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
+                                    :disabled="actionInProgress">
+                                    <span v-if="actionInProgress && currentAction === 'cancel'"
+                                        class="flex items-center">
+                                        <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                                stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor"
+                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                            </path>
+                                        </svg>
+                                        Procesando...
+                                    </span>
+                                    <span v-else>Cancelar</span>
+                                </button>
+                            </template>
+                        </div>
+
                         <button @click="closeModal"
-                            class="hover:cursor-pointer px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-colors">
+                            class="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-colors ml-auto">
                             Cerrar
                         </button>
                     </div>

@@ -155,29 +155,25 @@ onUnmounted(() => {
                         </div>
                     </div>
                     <div class="h-px bg-gray-200 my-2"></div>
-                    <button @click="navigateTo('/dashboard/tasks')"
+                    <button @click="navigateTo('/tareas')"
                         class="flex w-full items-center rounded-md px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-100">
                         <ClipboardIcon class="mr-3 h-5 w-5" />
                         Tareas
                     </button>
-                    <button @click="navigateTo('/dashboard/requests')"
+                    <button @click="navigateTo('/solicitudes')"
                         class="flex w-full items-center rounded-md px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-100">
                         <InboxIcon class="mr-3 h-5 w-5" />
                         Solicitudes
                     </button>
-                    <button @click="navigateTo('/dashboard/apply')"
+                    <button @click="navigateTo('/apply')"
                         class="flex w-full items-center justify-center rounded-md px-3 py-2 text-base font-medium bg-primary text-primary-foreground hover:bg-primary/90 mt-2">
                         Aplicar
                     </button>
                     <div class="h-px bg-gray-200 my-2"></div>
-                    <button @click="navigateTo('/dashboard/profile')"
+                    <!-- <button @click="navigateTo('/profile')"
                         class="flex w-full items-center rounded-md px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-100">
                         Perfil
-                    </button>
-                    <button @click="navigateTo('/dashboard/settings')"
-                        class="flex w-full items-center rounded-md px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-100">
-                        Configuración
-                    </button>
+                    </button> -->
                     <button @click="logout"
                         class="flex w-full items-center rounded-md px-3 py-2 text-base font-medium text-red-600  hover:bg-gray-100">
                         <LogOutIcon class="mr-3 h-5 w-5" />
@@ -189,7 +185,7 @@ onUnmounted(() => {
     </header>
 
     <main class="flex-1 bg-gray-100 p-4 sm:p-6 lg:p-8 min-h-screen">
-        <div class="px-40">
+        <div class="lg:px-40">
             <slot></slot>
         </div>
     </main>

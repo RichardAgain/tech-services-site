@@ -14,4 +14,15 @@ const fetchUserTasks = () => {
     })
 }
 
+const updateUserTask = (taskId, status) => {
+    return axios.patch(`api/tasks/${taskId}`, { status }, {
+        headers: { "Authorization": `Bearer ${useAuthStore().token}` }
+    })
+    .then(response => response.data)
+    .catch((error) => {
+        console.error("Error updating task:", error);
+        throw error
+    })
+}
+
 export { fetchUserTasks }

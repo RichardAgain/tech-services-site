@@ -163,10 +163,10 @@ const handleSubmit = async () => {
             type="submit"
             @click="handleSubmit"
             :disabled="isSubmitting"
-            class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-sky-600 hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 transition-colors duration-200 disabled:opacity-70"
+            class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-opacity-95 hover:cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 transition-colors duration-200 disabled:opacity-70"
           >
             <span v-if="isSubmitting" class="absolute left-0 inset-y-0 flex items-center pl-3">
-              <LoaderIcon class="h-5 w-5 text-sky-400 animate-spin" />
+              <LoaderIcon class="h-5 w-5 text-zync-400 animate-spin" />
             </span>
             {{ isSubmitting ? 'Signing in...' : 'Sign in' }}
           </button>
