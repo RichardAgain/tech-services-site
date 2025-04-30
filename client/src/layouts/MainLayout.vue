@@ -54,7 +54,7 @@ onUnmounted(() => {
                 <!-- Logo/Brand -->
                 <div class="flex items-center">
                     <RouterLink to="/" class="flex items-center space-x-2">
-                        <span class="text-xl font-bold text-gray-900">Dashboard</span>
+                        <span class="text-xl font-bold text-gray-900">Servicios Tecnico</span>
                     </RouterLink>
                 </div>
 

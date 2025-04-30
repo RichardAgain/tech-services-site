@@ -16,10 +16,10 @@ class ProfileApplicationController extends Controller
     {
         $applications = ProfileApplication::query();
 
-        if ($request->user()->role->id == UserRoles::ADMIN->value) {
-            $applications->where('status', '===', 'pending');
-        } else {
-            $applications->where('user_id', $request->user()->id);
+        if ($request->user()->role->id !== UserRoles::ADMIN->value) {
+            $applications->where('user_id', $request->user()->id)->orderBy('created_at', 'desc');
+
+            return ProfileApplicationResource::collection($applications->get());
         }
 
         $applications = ProfileApplication::orderBy('created_at', 'desc')->get();
