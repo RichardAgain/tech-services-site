@@ -38,7 +38,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Tag::create([
-            'name' => 'Instalación',
+            'name' => 'Armado',
         ]);
 
         Tag::create([
