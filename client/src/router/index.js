@@ -8,6 +8,7 @@ import RegisterView from '@/views/auth/RegisterView.vue'
 import TasksView from '@/views/tasks/TasksView.vue'
 import ApplicationsViews from '@/views/applications/ApplicationsViews.vue'
 import TechnicianView from '@/views/technicians/TechnicianView.vue'
+import ApplicateView from '@/views/applicate/ApplicateView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -49,6 +50,12 @@ const router = createRouter({
       path: '/solicitudes',
       name: 'applications',
       component: ApplicationsViews,
+      beforeEnter: authGuard
+    },
+    {
+      path: '/aplicar',
+      name: 'apply',
+      component: ApplicateView,
       beforeEnter: authGuard
     }
   ]

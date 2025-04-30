@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\TaskApplicationController;
 use App\Http\Controllers\Api\TaskController;
 use App\Models\ProfileApplication;
 use App\Models\Review;
+use App\Models\Tag;
 use App\Models\TaskApplication;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -25,6 +26,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('auth/user', function (Request $request) {
         return $request->user();
     });
+});
+
+//TAGS
+Route::get('tags', function () {
+    return response()->json(
+        Tag::all(),
+    );
 });
 
 //PROFILES
@@ -52,6 +60,8 @@ Route::controller(ReviewController::class)->group(function () {
 Route::controller(ProfileApplicationController::class)->middleware('auth:sanctum')->group(function () {
     Route::get('profile-applications', 'index');
     Route::get('profile-applications/{application}', 'show');
+
+    Route::post('profile-applications', 'create');
 
     Route::patch('profile-applications/{application}/accept', 'accept');
     Route::patch('profile-applications/{application}/reject', 'reject');

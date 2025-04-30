@@ -22,6 +22,24 @@ class ProfileApplicationController extends Controller
         return new ProfileApplicationResource($application);
     }
 
+    public function create(Request $request)
+    {
+        $application = ProfileApplication::create([
+            'user_id' => $request->user()->id,
+            'description' => $request->input('description'),
+            'status' => 'pending',
+        ]);
+
+        if (count($request->input('tags')) > 0) {
+            $application->tags()->attach($request->input('tags'));
+        }
+
+        return response()->json([
+            'message' => 'Profile application created successfully',
+            'data' => new ProfileApplicationResource($application),
+        ]);
+    }
+
     public function accept(ProfileApplication $application)
     {
         $application->update(['status' => 'accepted']);
