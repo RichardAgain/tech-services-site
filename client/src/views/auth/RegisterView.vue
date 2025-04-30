@@ -8,14 +8,14 @@ import router from '@/router'
 const authStore = useAuthStore()
 
 const form = reactive({
-  firstName: 'Balatro',
-  lastName: 'Balatrez',
-  username: 'balatreo',
-  email: 'balatrobalatrez@example.com',
-  address: 'Valencia, Carabobo',
-  phone: '0414-1234567',
-  password: 'password',
-  password_confirmation: 'password',
+  firstName: '',
+  lastName: '',
+  username: '',
+  email: '',
+  address: '',
+  phone: '',
+  password: '',
+  password_confirmation: '',
 })
 
 const showPassword = ref(false)

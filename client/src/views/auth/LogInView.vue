@@ -9,8 +9,8 @@ import authServices from '@/services/auth';
 
 const authStore = useAuthStore();
 const userData = reactive({
-  email: 'admin@example.com',
-  password: 'password',
+  email: '',
+  password: '',
 })
 
 // UI state
