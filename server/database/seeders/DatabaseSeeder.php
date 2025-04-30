@@ -34,15 +34,11 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Tag::create([
-            'name' => 'Reparacion',
+            'name' => 'Reparación',
         ]);
 
         Tag::create([
-            'name' => 'Instalacion',
-        ]);
-
-        Tag::create([
-            'name' => 'Soldadura',
+            'name' => 'Instalación',
         ]);
 
         User::factory()->admin()->create([
