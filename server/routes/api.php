@@ -63,7 +63,7 @@ Route::controller(ProfileApplicationController::class)->middleware('auth:sanctum
 
     Route::post('profile-applications', 'create');
 
-    Route::patch('profile-applications/{application}/accept', 'accept');
+    Route::post('profile-applications/{application}/accept', 'accept');
     Route::patch('profile-applications/{application}/reject', 'reject');
 });
 

@@ -7,6 +7,13 @@ const getProfileApplications = async () => {
     return await axios.get('/api/profile-applications', {
         headers: { 'Authorization': `Bearer ${authStore.token}` }
     })
+    .then((response) => {
+        return response.data.data;
+    })
+    .catch((error) => {
+        console.error("Error fetching profile applications:", error);
+        throw error;
+    });
 }
 
 const createProfileApplication = async (profileApplication) => {
@@ -42,7 +49,7 @@ const acceptProfileApplication = async (profileApplicationId) => {
 const rejectProfileApplication = async (profileApplicationId) => {
     const authStore = useAuthStore();
     
-    return await axios.post(`/api/profile-applications/${profileApplicationId}/reject`, {}, {
+    return await axios.patch(`/api/profile-applications/${profileApplicationId}/reject`, {}, {
         headers: { 'Authorization': `Bearer ${authStore.token}` }
     })
     .then((response) => {

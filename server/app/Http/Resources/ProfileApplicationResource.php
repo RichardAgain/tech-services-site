@@ -22,6 +22,7 @@ class ProfileApplicationResource extends JsonResource
             'createdAt' => $this->created_at,
             'status' => $this->status,
             
+            'id' => $this->id,
             'firstName' => $this->user->firstName,
             'lastName' => $this->user->lastName,
             'email' => $this->user->email,

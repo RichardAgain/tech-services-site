@@ -8,6 +8,8 @@ import authService from '@/services/auth';
 const authStore = useAuthStore();
 const user = authStore.user;
 
+console.log(user.role)
+
 // State
 const isUserMenuOpen = ref(false)
 const isMobileMenuOpen = ref(false)

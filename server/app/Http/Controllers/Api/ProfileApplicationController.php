@@ -2,19 +2,29 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\ApplicationStatuses;
 use App\Enums\UserRoles;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ProfileApplicationResource;
 use App\Models\ProfileApplication;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class ProfileApplicationController extends Controller
 {
     public function index(Request $request)
     {
+        $applications = ProfileApplication::query();
+
+        if ($request->user()->role->id == UserRoles::ADMIN->value) {
+            $applications->where('status', '===', 'pending');
+        } else {
+            $applications->where('user_id', $request->user()->id);
+        }
+
         $applications = ProfileApplication::orderBy('created_at', 'desc')->get();
 
-        return ProfileApplication::collection($applications);
+        return ProfileApplicationResource::collection($applications);
     }
 
     public function show(ProfileApplication $application)
@@ -42,13 +52,17 @@ class ProfileApplicationController extends Controller
 
     public function accept(ProfileApplication $application)
     {
-        $application->update(['status' => 'accepted']);
+        $application->update(['status' => ApplicationStatuses::APPROVED->value]);
 
-        $application->user->profile()->create([
+        $user = User::find($application->user->id);
+
+        $user->profile()->create([
             'description' => $application->description,
         ])->tags()->attach($application->tags);
 
-        $application->user()->role()->associate(UserRoles::OPERATOR->value);
+        $user->role()->associate(UserRoles::OPERATOR->value);
+        $user->save();
+        $user->tokens()->delete();
 
         return response()->json(['message' => 'Application accepted successfully.']);
     }
