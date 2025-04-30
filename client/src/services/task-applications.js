@@ -5,12 +5,12 @@ import { useAuthStore } from "@/stores/authorization"
 const postTaskApplication = (application) => {
     const authStore = useAuthStore()
 
-    return axios.post('api/task-applications', application, {
+    return axios.post('/api/task-applications', application, {
         headers: { 'Authorization': `Bearer ${authStore.token}` }
     })
     .then(res => res.data)
     .catch(err => {
-        console.error("Error posting task application:", err.response.data)
+        console.error("Error posting task application:", err)
         throw err.response.data.message
     })
 }
@@ -18,7 +18,7 @@ const postTaskApplication = (application) => {
 const acceptTaskApplication = (applicationId) => {
     const authStore = useAuthStore()
 
-    return axios.post(`api/task-applications/${applicationId}/accept`, {}, {
+    return axios.post(`/api/task-applications/${applicationId}/accept`, {}, {
         headers: { 'Authorization': `Bearer ${authStore.token}` }
     })
     .then(res => res.data)
@@ -31,7 +31,7 @@ const acceptTaskApplication = (applicationId) => {
 const rejectTaskApplication = (applicationId) => {
     const authStore = useAuthStore()
 
-    return axios.patch(`api/task-applications/${applicationId}/reject`, {}, {
+    return axios.patch(`/api/task-applications/${applicationId}/reject`, {}, {
         headers: { 'Authorization': `Bearer ${authStore.token}` }
     })
     .then(res => res.data)

@@ -6,6 +6,9 @@ import { acceptTaskApplication, rejectTaskApplication } from '@/services/task-ap
 import { fetchUserTasks, updateUserTask } from '@/services/tasks';
 import { useAuthStore } from '@/stores/authorization';
 import { computed, onBeforeMount, ref } from 'vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter()
 
 const authStore = useAuthStore()
 const user = authStore.user
@@ -30,7 +33,9 @@ onBeforeMount(async () => {
 
         console.log(user.role.id)
 
+        
         tasks.value = response.tasks
+        console.log(tasks.value)
         applications.value = response.applications
     } finally {
 
@@ -42,15 +47,10 @@ const handleTaskAction = async (action) => {
     currentAction.value = action;
 
     try {
-        // Simulate API call with delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
         const taskId = selectedTask.value.id;
-        console.log(taskId)
 
         if (action === 'complete') {
             const response = await updateUserTask(taskId, 'completed');
-
             // tasks.value[taskIndex].status = 'completed';
             // actionStatus.value = {
             //     show: true,
@@ -60,8 +60,7 @@ const handleTaskAction = async (action) => {
         }
         
         if (action === 'cancel') {
-            const response = await (taskId, 'canceled');
-
+            const response = await updateUserTask(taskId, 'canceled');
             // tasks.value[taskIndex].status = 'cancelled';
             // actionStatus.value = {
             //     show: true,
@@ -72,7 +71,6 @@ const handleTaskAction = async (action) => {
 
         if (action === 'approve') {
             const response = await acceptTaskApplication(taskId);
-
             // applications.value[appIndex].status = 'approved';
             // actionStatus.value = {
             //     show: true,
@@ -83,7 +81,6 @@ const handleTaskAction = async (action) => {
         
         if (action === 'reject') {
             const response = await rejectTaskApplication(taskId);
-
             // applications.value[appIndex].status = 'rejected';
             // actionStatus.value = {
             //     show: true,
@@ -91,6 +88,8 @@ const handleTaskAction = async (action) => {
             //     message: 'La solicitud ha sido rechazada.'
             // };
         }
+
+        location.reload()
     } catch (error) {
         console.error('Error updating task:', error);
         actionStatus.value = {
@@ -101,21 +100,18 @@ const handleTaskAction = async (action) => {
     } finally {
         actionInProgress.value = false;
         currentAction.value = null;
+
     }
 };
 
 // Computed property for approved tasks from both sources
 const approvedTasks = computed(() => {
-    const approvedApplications = applications.value
-        .filter(app => app.status === 'approved')
-        .map(app => ({ ...app, type: 'application' }));
-
     const approvedCreatedTasks = tasks.value
         .filter(task => task.status === 'approved')
         .map(task => ({ ...task, type: 'task' }));
 
     // Combine and sort by date (newest first)
-    return [...approvedApplications, ...approvedCreatedTasks]
+    return [ ...approvedCreatedTasks]
         .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 });
 
@@ -213,7 +209,7 @@ const getStatusText = (status) => {
         'approved': 'Aprobado',
         'pending': 'Pendiente',
         'rejected': 'Rechazado',
-        'canceled': 'En Progreso',
+        'canceled': 'Cancelado',
         'completed': 'Completado'
     };
 
@@ -221,8 +217,8 @@ const getStatusText = (status) => {
 };
 
 // Modal functions
-const openTaskModal = (task) => {
-    selectedTask.value = { ...task };
+const openTaskModal = (task, type="") => {
+    selectedTask.value = { ...task, type };
     showModal.value = true;
     // Reset action status when opening modal
     actionStatus.value = {
@@ -230,6 +226,8 @@ const openTaskModal = (task) => {
         success: false,
         message: ''
     };
+
+    console.log(selectedTask.value)
     // Prevent scrolling on the body when modal is open
     document.body.style.overflow = 'hidden';
 };
@@ -286,7 +284,7 @@ const closeModal = () => {
 
                             <div class="flex justify-between items-center">
                                 <span class="text-xs text-gray-500">{{ formatDate(task.createdAt) }}</span>
-                                <button @click="openTaskModal(task)"
+                                <button @click="openTaskModal(task, 'task')"
                                     class="hover:cursor-pointer text-emerald-600 hover:text-emerald-900 font-medium text-sm px-3 py-1 rounded-md hover:bg-emerald-50 transition-colors">
                                     Ver
                                 </button>
@@ -359,7 +357,7 @@ const closeModal = () => {
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{
                                         formatDate(app.createdAt) }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        <button @click="openTaskModal(app)"
+                                        <button @click="openTaskModal(app, 'app')"
                                             class="text-emerald-600 hover:text-emerald-900 font-medium text-sm px-3 py-1 rounded-md hover:bg-emerald-50 transition-colors">
                                             Ver
                                         </button>
@@ -424,7 +422,7 @@ const closeModal = () => {
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{
                                         formatDate(task.createdAt) }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        <button @click="openTaskModal(task)"
+                                        <button @click="openTaskModal(task, 'task')"
                                             class="text-emerald-600 hover:text-emerald-900 font-medium text-sm px-3 py-1 rounded-md hover:bg-emerald-50 transition-colors">
                                             Ver
                                         </button>
@@ -509,12 +507,7 @@ const closeModal = () => {
 
                                 <div v-if="selectedTask.tags && selectedTask.tags.length > 0">
                                     <h4 class="text-sm font-medium text-gray-500 mb-1">Etiquetas</h4>
-                                    <div class="flex flex-wrap gap-2">
-                                        <span v-for="(tag, index) in selectedTask.tags" :key="index"
-                                            class="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded">
-                                            {{ tag }}
-                                        </span>
-                                    </div>
+                                    <TagCards :tags="selectedTask.tags" />
                                 </div>
 
                                 <div v-else>
@@ -564,7 +557,7 @@ const closeModal = () => {
                         <!-- Role-based action buttons -->
                         <div v-if="user.role.id === 2" class="flex space-x-2">
                             <!-- Application-specific buttons -->
-                            <template v-if="selectedTask.status === 'pending'">
+                            <template v-if="selectedTask.status === 'pending' && selectedTask.type === 'app'">
                                 <button @click="handleTaskAction('approve')"
                                     class="px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors"
                                     :disabled="actionInProgress">
@@ -602,7 +595,7 @@ const closeModal = () => {
                             </template>
 
                             <!-- Task-specific buttons -->
-                            <template v-if="selectedTask.status === 'approved'">
+                            <template v-if="selectedTask.status === 'approved' && selectedTask.type === 'task'">
                                 <button @click="handleTaskAction('complete')"
                                     class="px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-colors"
                                     :disabled="actionInProgress">

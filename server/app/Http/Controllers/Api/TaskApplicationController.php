@@ -21,13 +21,11 @@ class TaskApplicationController extends Controller
 
     public function createTaskApplication(StoreTaskApplicationRequest $request) //validate
     {
-        $application = TaskApplication::make([
+        $application = TaskApplication::create([
             ...$request->validated(),
             'requester_id' => $request->user()->id,
             'status' => ApplicationStatuses::PENDING->value,
         ]);
-
-        $application->save();
 
         if (count($request->safe()['tags']) > 0) {
             $application->tags()->attach($request->safe()['tags']);
